@@ -18,8 +18,23 @@ Dump of assembler code for function ex1:
 ``` 
 
 1. Quantos argumentos a função recebe? Quais seus tipos? Ela retorna algo? O quê? \vspace{5em}
+4 argumentos(rsi, rdi, rdx e rcx), são int, ele retorna a soma de edx com eax e guarda em eax
+
 1. Traduza o programa acima linha a linha. \vspace{10em}
+int ex1( int a, int b, int c, int d){
+   int e;
+   e = b + 2*a;
+   c = 3*c;
+   e += c;
+   d = 3*d;
+   c = 2*d;
+   e += c;
+   return e;
+}   
 1. Escreva uma versão legível do programa acima. \newpage
+int ex1(int a, int b, int c, int d){
+   return b +2*a +3*c + 6*d;
+}   
 
 **Exercício 2**: 
 
@@ -36,11 +51,33 @@ Dump of assembler code for function ex2:
 ```
 
 1. Quantos argumentos a função recebe? Quais seus tipos? Ela retorna algo? O quê? \vspace{5em}
-1. A função acima faz uma comparação. Qual e entre quais variáveis? \vspace{5em}
-1. As instruções nas linhas `ex2+4` e `ex2+12` fazem acessos a memória. Qual o tipo da variável destino?  \vspace{5em}
-1. Faça uma tradução da função acima usando somente `if-goto` \vspace{10em}
-1. Faça uma versão legível da função acima. \newpage
+3 argumentos (edi, esi e rdx), são int, ela retorna ou 0 ou 1.
 
+1. A função acima faz uma comparação. Qual e entre quais variáveis? \vspace{5em}
+ele ve se edi maior que esi, se for maior ele pula pra linha +12
+
+1. As instruções nas linhas `ex2+4` e `ex2+12` fazem acessos a memória. Qual o tipo da variável destino?  \vspace{5em}
+o tipo da variável é int
+
+1. Faça uma tradução da função acima usando somente `if-goto` \vspace{10em}
+int ex2(int a, int b, int *c){
+   if(a > b) goto if1;
+   *c = b;
+   return 0;
+   if1:
+   *c = a;
+   return 1;
+ }  
+   
+1. Faça uma versão legível da função acima. \newpage
+int ex2(int a, int b, int c){
+   if(a > b){
+      *c = a;
+      return 1;
+   }
+   *c = b;
+   return 0;
+}   
 
 # Parte 2 - loops `while` e `for`
 
@@ -58,9 +95,23 @@ Dump of assembler code for function soma_2n:
 ```
 
 1. Localize no código acima as instruções de saltos (`jmp` ou condicionais `j*`). Desenhe setas indicando para qual linha do código elas pulam.
+jbe ve se o que ta em edi é menor ou igual a 1, se for verdadeiro pula pro return. JMP volta para a linha 5 e realiza jbe de novo ate ir pro return
 
 2. Analise o fluxo de saltos do seu código. Existe um loop? Entre quais linhas? \vspace{5em}
+existe sim um loop, entre as linhas 8 e 15
+
 1. Comece fazendo uma versão *C* usando somente `if-goto` \vspace{15em}
+int ex3(unsigned int a){
+   int b;
+   b = 1;
+   goto lc:
+   if1:
+   b+=1;
+   lc:
+   if(a <=1) goto if1;
+   return a;
+}   
+   
 1. Transforme a construção que você fez acima em um código usando `while`. \vspace{15em}
 
 \pagebreak
