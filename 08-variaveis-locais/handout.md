@@ -6,7 +6,7 @@ Como visto na expositiva, variáveis locais são armazenadas na pilha. O topo da
 
 **Exemplo guiado**: Funções que guardam variáveis na pilha seguem um padrão facilmente identificável. Primeiro elas subtraem um valor da pilha (`0x10` no exemplo abaixo) correspondente ao tamanho total de todas as variáveis usadas. Depois temos várias instruções usando endereços relativos a `%rsp` e por fim devolvemos o espaço usado somando `0x10` de volta a `%rsp`.
 
-~~~{asm}
+```{asm}
 sub $0x10, %rsp
 . . . // código da função aqui!
 movl    0x8(%rsp),%eax
@@ -15,22 +15,23 @@ addl    0xc(%rsp),%edx
 . . . // função continua
 add $0x10, %rsp
 ret
-~~~
+```
 
-No exemplo acima, temos duas variáveis locais: `0x8(%rsp)` e `0xc(rsp)`. Cada uma é identificada no código Assembly pelo endereço em que está posicionada na pilha. Logo, **todo deslocamento em relação a `%rsp` indica um acesso a variável local**, sendo que pode ser um acesso de leitura e escrita (usando `MOV`, por exemplo) ou da operação *endereço de* `&` (usando `LEA`).
+No exemplo acima, temos duas variáveis locais: `0x8(%rsp)` e `0xc(rsp)`. Cada uma é identificada no código Assembly pelo endereço em que está posicionada na pilha. Logo, **todo deslocamento em relação a `%rsp` indica um acesso a variável local**, sendo que pode ser um acesso de leitura e escrita (usando `MOV`, por exemplo) ou da operação _endereço de_ `&` (usando `LEA`).
 
 Conseguimos identificar que seus tamanhos são `int` por duas razões:
 
 1. elas aparecem em instruções junto com registradores de 4 bytes (`%eax` e `%edx`)
-1. as instruções `movl` e `addl` tem o sufixo `l`, que indica que os dados tratados tem tamanho 4 bytes. Os sufixos suportados são: 
-    * `b` - 1 byte
-    * `w` - 2 bytes
-    * `l` - 4 bytes
-    * `q` - 8 bytes 
-    
+1. as instruções `movl` e `addl` tem o sufixo `l`, que indica que os dados tratados tem tamanho 4 bytes. Os sufixos suportados são:
+
+   - `b` - 1 byte
+   - `w` - 2 bytes
+   - `l` - 4 bytes
+   - `q` - 8 bytes
+
 Qualquer razão acima é suficiente para identificar os tipos das variáveis locais.
 
-**Importante**: novamente, nem toda instrução em Assembly pode ser representada em *C*. As instruções `sub 0x10, %rsp` e `add 0x10, %rsp` representam a criação de variáveis locais na pilha e não tem equivalente em *C*. Simplesmente ignoramos elas e usamos as variáveis locais no código.
+**Importante**: novamente, nem toda instrução em Assembly pode ser representada em _C_. As instruções `sub 0x10, %rsp` e `add 0x10, %rsp` representam a criação de variáveis locais na pilha e não tem equivalente em _C_. Simplesmente ignoramos elas e usamos as variáveis locais no código.
 
 \newpage
 
@@ -38,12 +39,12 @@ Antes de iniciar o próximo exercício vamos revisar como variáveis locais, glo
 
 ![Organização das variáveis locais, globais e strings constantes na memória](pilha-rip.png)
 
-* **Variáveis locais**: são acessadas com `lea` (para `&` - endereço de) ou `mov` (para leituras e escritas) relativos a `%rsp`
-* **Globais e strings constantes**: são acessadas usando a notação `0xYY(%rip)`, sendo que o valor `0xYY` muda a cada acesso. No caso das strings, o acesso a estes endereços é somente leitura.
+- **Variáveis locais**: são acessadas com `lea` (para `&` - endereço de) ou `mov` (para leituras e escritas) relativos a `%rsp`
+- **Globais e strings constantes**: são acessadas usando a notação `0xYY(%rip)`, sendo que o valor `0xYY` muda a cada acesso. No caso das strings, o acesso a estes endereços é somente leitura.
 
-O endereçamento relativo a `%rip` leva em conta a posição relativa entre a instrução atual e o endereço de memória do dado. Na imagem acima estão destacadas duas instruções `lea` que acessam o mesmo dado. Como o `%rip` (ponteiro para a próxima instrução) é diferente precisamos de deslocamentos diferentes para acessar o mesmo dado. 
+O endereçamento relativo a `%rip` leva em conta a posição relativa entre a instrução atual e o endereço de memória do dado. Na imagem acima estão destacadas duas instruções `lea` que acessam o mesmo dado. Como o `%rip` (ponteiro para a próxima instrução) é diferente precisamos de deslocamentos diferentes para acessar o mesmo dado.
 
-**Dica**: o *gdb* coloca o endereço calculado ao lado das instruções deste tipo.
+**Dica**: o _gdb_ coloca o endereço calculado ao lado das instruções deste tipo.
 
 \newpage
 
@@ -55,7 +56,7 @@ lea    0x8(%rsp),%rdx
 
 \vspace{5em}
 
-**Exercício 2**: O código abaixo (*ex2.o*) utiliza variáveis locais.
+**Exercício 2**: O código abaixo (_ex2.o_) utiliza variáveis locais.
 
 ```asm
 Dump of assembler code for function func1:
@@ -68,7 +69,7 @@ Dump of assembler code for function func1:
    0x0621 <+35>:	lea    0x8(%rsp),%rdi
    0x0626 <+40>:	callq  0x5fa <func2>
    0x062b <+45>:	add    $0x10,%rsp
-   0x062f <+49>:	retq   
+   0x062f <+49>:	retq
 
 ```
 
@@ -76,11 +77,22 @@ Dump of assembler code for function func1:
 1. Identifique onde as variáveis locais encontradas são usadas. \vspace{5em}
 1. Os `lea` das linhas `+20` e `+35` podem ser aritméticos? Que operação eles representam? \vspace{5em}
 1. Com base em sua resposta acima, traduza as chamadas de função que ocorrem nas linhas `+25` e `+40`. \vspace{5em}
-1. Traduza o programa acima para *C* \vspace{10em}
+1. Traduza o programa acima para _C_ \vspace{10em}
+   void func2(int *a) {
+   *a += 1;
+   }
+
+int func1() {
+int a = 10;
+int b = 11;
+func2(&a);
+b++;
+func2(&b);
+}
 
 \newpage
 
-**Exercício 3**: No exercício anterior vimos como passar variáveis por referência para outras funções. Agora veremos como trabalhar com `scanf`. Veja abaixo a função `main` do executável `ex3`. Abra este arquivo usando o *gdb* e siga os exercícios.
+**Exercício 3**: No exercício anterior vimos como passar variáveis por referência para outras funções. Agora veremos como trabalhar com `scanf`. Veja abaixo a função `main` do executável `ex3`. Abra este arquivo usando o _gdb_ e siga os exercícios.
 
 ```asm
 Dump of assembler code for function main:
@@ -103,7 +115,7 @@ Dump of assembler code for function main:
 
 1. Vamos começar procurando por variáveis locais que estejam na pilha. Quanto espaço é reservado para elas? Liste abaixo as que você encontrou e dê um nome para cada uma. **Dica**: todo acesso relativo a `%rsp` representa um acesso a variável local. \vspace{7em}
 
-1. A instrução `call` em `main+21` é um `scanf`. O primeiro argumento é a string de formatação. Use o comando `x` do *gdb* para encontrar ela na memória. \vspace{7em}
+1. A instrução `call` em `main+21` é um `scanf`. O primeiro argumento é a string de formatação. Use o comando `x` do _gdb_ para encontrar ela na memória. \vspace{7em}
 
 1. O segundo argumento do `scanf` é o endereço da variável a ser preenchida. O endereço que qual variável local é passado? \vspace{7em}
 
@@ -111,14 +123,25 @@ Dump of assembler code for function main:
 
 Com a chamada do `scanf` pronta, vamos analisar o restante do código.
 
-1. Agora examinaremos as chamadas em `main+40` e `main+62`. Elas são para a função `puts`. Veja sua documentação (procure por *C puts*.) e explique abaixo o quê ela faz e quais são seus argumentos. \vspace{5em}
+1. Agora examinaremos as chamadas em `main+40` e `main+62`. Elas são para a função `puts`. Veja sua documentação (procure por _C puts_.) e explique abaixo o quê ela faz e quais são seus argumentos. \vspace{5em}
 
-1. Com base na explicação acima, escreva abaixo os argumentos passados para cada chamada. \vspace{5em} 
+1. Com base na explicação acima, escreva abaixo os argumentos passados para cada chamada. \vspace{5em}
 
-1. Traduza o código acima para um versão em *C*. \newpage
+1. Traduza o código acima para um versão em _C_. \newpage
 
+int main() {
+int n;
+scanf("%d", &n);
+  
+ if (n < 0) {
+printf("Negativo\n");
+} else {
+printf("Positivo!\n");
+}
+return 0;
+}
 
-**Exercício 4** (entrega): levando em conta o código Assembly abaixo, faça uma versão em *C*. Você deverá usar todos os passos feitos nos exercícios anteriores. 
+**Exercício 4** (entrega): levando em conta o código Assembly abaixo, faça uma versão em _C_. Você deverá usar todos os passos feitos nos exercícios anteriores.
 
 ```asm
 Dump of assembler code for function ex4:
@@ -140,8 +163,9 @@ Dump of assembler code for function ex4:
 ```
 
 \newpage
+argumentos: edi, rsi, rdx,
 
-**Exercício 5** (entrega): vamos agora juntar a aula atual com a anterior. Faça uma versão em *C* do código abaixo. Novamente, use os passos aprendidos nos roteiros anteriores;
+**Exercício 5** (entrega): vamos agora juntar a aula atual com a anterior. Faça uma versão em _C_ do código abaixo. Novamente, use os passos aprendidos nos roteiros anteriores;
 
 ```asm
 Dump of assembler code for function ex5:
@@ -163,12 +187,5 @@ Dump of assembler code for function ex5:
    0x0705 <+59>:	mov    %ebx,%eax
    0x0707 <+61>:	add    $0x10,%rsp
    0x070b <+65>:	pop    %rbx
-   0x070c <+66>:	retq   
+   0x070c <+66>:	retq
 ```
- 
- 
-
-
-
-
-
