@@ -1,10 +1,10 @@
 % 09 - Prática de Engenharia Reversa
 % Sistemas Hardware-Software - 2020/1
-% Igor Montagner 
+% Igor Montagner
 
-As aulas de hoje e quinta serão dedicadas a revisar conceitos básicos vistos nas últimas 5 aulas. A parte 1 repassa chamadas de funções e o uso da instrução `LEA`. A parte 2 contém exercícios intermediários que misturam dois conceitos vistos em aula (ex: loops e `LEA` ou funções + condicionais). Está indicado ao lado de cada exercício quais conceitos são exercitados e todos eles serão recebidos via repositório de atividades da disciplina. 
+As aulas de hoje e quinta serão dedicadas a revisar conceitos básicos vistos nas últimas 5 aulas. A parte 1 repassa chamadas de funções e o uso da instrução `LEA`. A parte 2 contém exercícios intermediários que misturam dois conceitos vistos em aula (ex: loops e `LEA` ou funções + condicionais). Está indicado ao lado de cada exercício quais conceitos são exercitados e todos eles serão recebidos via repositório de atividades da disciplina.
 
-**Atenção**: acesse a aba "Repositório de Atividades" no Teams para indicar seu usuário do blackboard e endereço do repositório privado no Github.  
+**Atenção**: acesse a aba "Repositório de Atividades" no Teams para indicar seu usuário do blackboard e endereço do repositório privado no Github.
 
 Todo exercício para entrega deverá ser colocado no repositório de atividades da disciplina.
 
@@ -14,18 +14,18 @@ Todos os exercícios da revisão serão feitos com o arquivo `exemplo1` (compila
 
 ## Chamadas de funções
 
-As chamadas de função são feitas usando a seguinte ordem para os argumentos inteiros: 
+As chamadas de função são feitas usando a seguinte ordem para os argumentos inteiros:
 
 1. `%rdi`
 2. `%rsi`
 3. `%rdx`
 4. `%rcx`
 5. `%r8`
-6. `%r9` 
+6. `%r9`
 
-**Esta ordem nunca muda**. Veja abaixo um exemplo de chamada de função.  
+**Esta ordem nunca muda**. Veja abaixo um exemplo de chamada de função.
 
-~~~{asm}
+```{asm}
    0x065c <+4>:	    mov    $0x6,%r9d
    0x0662 <+10>:	mov    $0x5,%r8d
    0x0668 <+16>:	mov    $0x4,%ecx
@@ -34,11 +34,22 @@ As chamadas de função são feitas usando a seguinte ordem para os argumentos i
    0x0677 <+31>:	mov    $0x1,%edi
    0x067c <+36>:	callq  0x64a <exemplo1>
    0x0681 <+41>:	lea    0xa(%rax),%esi
-~~~
+```
 
-**Exercício**: Traduza esta invocação de função para *C*: 
+**Exercício**: Traduza esta invocação de função para _C_:
+int main(){
+int r9d = 6;
+int r8d = 5;
+int ecx = 4;
+int edx = 3;
+int esi = 2;
+int edi = 1;
 
-\newpage 
+esi = 10 + exemplo1(edi, esi, edx, ecx, r8d, r9d);
+
+}
+
+\newpage
 
 Vamos agora analisar o código de `exemplo1`:
 
@@ -56,9 +67,9 @@ Vemos na linha `exemplo1+9` que colocamos um valor no registrador `%eax` e depoi
 
 ## Operações aritméticas usando `LEA`
 
-Se usada de maneira literal, a instrução LEA (**L**oad **E**ffective **A**ddress) serve para calcular o endereço de uma variável local e é equivalente ao operador `&` em *C*. Porém, ela é frequentemente "abusada" para fazer aritmética. Um ponto importante quando usamos `LEA` é que todos os operandos são registradores de `64` bits.
+Se usada de maneira literal, a instrução LEA (**L**oad **E**ffective **A**ddress) serve para calcular o endereço de uma variável local e é equivalente ao operador `&` em _C_. Porém, ela é frequentemente "abusada" para fazer aritmética. Um ponto importante quando usamos `LEA` é que todos os operandos são registradores de `64` bits.
 
-**Regra geral**: 
+**Regra geral**:
 
 1. Se `LEA` for usada com o registrador `%rsp` então ela sempre representa o operador `&`
 1. Se os registradores envolvidos foram usados como números inteiros em instruções anteriores, então ela representa uma conta com os valores dos registradores.
@@ -73,16 +84,16 @@ No exemplo acima `LEA` é usada para fazer aritmética. Sabemos disso pois, na c
 
 ```asm
 C(%R1, %R2, S)
-``` 
+```
 
-* `C` é uma constante
-* `%R1` é um registrador
-* `%R2` é um registrador (pode ser igual a `%R1`)
-* `S` é `1, 2, 4`  ou `8` (todos os tamanhos possíveis de registradores inteiros)
+- `C` é uma constante
+- `%R1` é um registrador
+- `%R2` é um registrador (pode ser igual a `%R1`)
+- `S` é `1, 2, 4` ou `8` (todos os tamanhos possíveis de registradores inteiros)
 
 A operação acima calcula `C + %R1 + (%R2 * S)`. A operação `LEA` **nunca acessa a memória**, apenas move o resultado deste cálculo para o registrador destino. **Qualquer outra operação que use a sintaxa acima está fazendo um acesso a memória. `LEA` é a única exceção!**
 
-**Exercício**: traduza a operação abaixo para *C*
+**Exercício**: traduza a operação abaixo para _C_
 
 ```asm
    0x0653 <+9>:	    lea    (%rcx,%r9,1),%eax
@@ -90,7 +101,9 @@ A operação acima calcula `C + %R1 + (%R2 * S)`. A operação `LEA` **nunca ace
 
 \newpage
 
-**Exercício**: Com estas informações em mãos, traduza `exemplo1` para *C*
+eax = rcx + r9\*1
+
+**Exercício**: Com estas informações em mãos, traduza `exemplo1` para _C_
 
 ```asm
 Dump of assembler code for function exemplo1:
@@ -103,6 +116,14 @@ Dump of assembler code for function exemplo1:
 ```
 
 \vspace{10em}
+
+int exemplo1(int edi, int esi, int edx, int ecx, int r8d, int r9){
+edi +=esi;
+edx += edi;
+ecx += edx;
+ecx += r8d;
+return ecx +r9\*1;
+}
 
 ## Retorno de funções
 
@@ -119,23 +140,33 @@ Vamos terminar nossa revisão analisando novamente a chamada de `exemplo1` no `m
    0x0681 <+41>:	lea    0xa(%rax),%esi
 ```
 
-Anteriormente já vimos que o `call` e os `mov` s acima fazem a chamada `exemplo1(1,2,3,4,5,6)` em *C*. 
-A linha de baixo realiza uma operação aritmética com `%rax`. 
+Anteriormente já vimos que o `call` e os `mov` s acima fazem a chamada `exemplo1(1,2,3,4,5,6)` em _C_.
+A linha de baixo realiza uma operação aritmética com `%rax`.
 
-**Exercício**: considerando que `%rax` armazena o valor de retorno de uma função, qual seria a tradução para *C* do bloco de código acima? \vspace{5em}
+**Exercício**: considerando que `%rax` armazena o valor de retorno de uma função, qual seria a tradução para _C_ do bloco de código acima? \vspace{5em}
 
+int main(){
+int r9d = 6;
+int r8d = 5;
+int ecx = 4;
+int edx = 3;
+int esi = 2;
+int edi = 1;
 
+esi = 10 + exemplo1(edi, esi, edx, ecx, r8d, r9d);
+
+}
 
 # Parte 2 - exercícios intermediários
 
 Os exercícios desta seção exercitam dois conceitos ao mesmo tempo. Cada um deles é disponibilizado via um arquivo `exI.o` na pasta `09-revisao` no repositório de atividades. A soluções devem ser colocadas no arquivo `solucao_exI.c` correspondente. Veja as instruções em cada arquivo para garantir que está implementando a função correta.
 
-**Importante**: cada exercício estará disponível em uma página do handout de revisão juntamente com questões "padrão" para cada assunto. Essas questões são feitas para ajudar na compreensão dos programas. Faça-as com atenção e facilite sua vida. 
+**Importante**: cada exercício estará disponível em uma página do handout de revisão juntamente com questões "padrão" para cada assunto. Essas questões são feitas para ajudar na compreensão dos programas. Faça-as com atenção e facilite sua vida.
 
 \newpage
 
-**Exercício**: As função abaixo exercita os assuntos **Aritmética** e **Expressões booleanas**. 
- 
+**Exercício**: As função abaixo exercita os assuntos **Aritmética** e **Expressões booleanas**.
+
 ```asm
 Dump of assembler code for function ex1:
    0x05fa <+0>:	    lea    (%rdi,%rsi,1),%rax
@@ -146,24 +177,50 @@ Dump of assembler code for function ex1:
    0x060d <+19>:	cmp    %rdx,%rcx
    0x0610 <+22>:	setge  %al
    0x0613 <+25>:	movzbl %al,%eax
-   0x0616 <+28>:	retq   
+   0x0616 <+28>:	retq
 ```
 
 1. Quantos argumentos a função acima recebe? Quais seus tipos? Declare a função abaixo. \vspace{5em}
+   3 argumentos(rdi, rsi e rdx), são long
+   int ex(long rdi, long rsi, long rdx);
 
-1. As instruções `LEA` acima representam operações aritméticas ou a operação *endereço de* `&`? Como você fez esta identificação? \vspace{5em}.
+1. As instruções `LEA` acima representam operações aritméticas ou a operação _endereço de_ `&`? Como você fez esta identificação? \vspace{5em}.
+   como nao tem o registrador rsp, os LEA acima representam operações aritméticas
 
-1. Traduza as operações das linhas `ex1+0` até `ex1+15` para *C* \vspace{10em}
+1. Traduza as operações das linhas `ex1+0` até `ex1+15` para _C_ \vspace{10em}
+   rax = rdi + rsi*1;
+   rcx = rax + rdx*4;
+   rdi *= rdi;
+   rax = rdi + rsi*2;
+   rdx +=rax;
 
-1. Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado? \vspace{5em}
+1) Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado? \vspace{5em}
 
-1. O quê faz a instrução `movzbl` em `ex1+24`? Juntando com a resposta da pergunta acima, traduza as instruções `ex1+18` até `ex1+27` para *C*.\vspace{5em}
+esta vendo se rcx é maior ou igual a rdx e esta armazenando em al, que é uma parte de eax
 
-Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
+1. O quê faz a instrução `movzbl` em `ex1+24`? Juntando com a resposta da pergunta acima, traduza as instruções `ex1+18` até `ex1+27` para _C_.\vspace{5em}
+   move um tipo unsigned com registrador fonte com tamanho 1 byte e registrador de destino com tamanho 4 bytes
+
+int ex_boolenas(long rdi, long rsi, long rdx){
+int rax = rdi + rsi*1;
+int rcx = rax + rdx*4;
+rdi *= rdi;
+rax = rdi + rsi*2;
+rdx +=rax;
+
+if(rcx >= rdx){
+return 1;
+}
+else{
+return 0;
+}
+}
+
+Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes.
 
 \newpage
 
-**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Condicionais**. 
+**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Condicionais**.
 
 ```asm
 Dump of assembler code for function ex2:
@@ -176,36 +233,54 @@ Dump of assembler code for function ex2:
    0x0610 <+17>:	add    %rbx,%rbx
    0x0613 <+20>:	add    %rbx,%rax
    0x0616 <+23>:	pop    %rbx
-   0x0617 <+24>:	retq   
+   0x0617 <+24>:	retq
 ```
 
 1. Quantos argumentos a função acima recebe? Quais são seus tipos? Declare-a abaixo. \vspace{5em}
+   dois argumentos, rdi e rsi, são long
 
-Vamos começar trabalhando na linha `ex2+7`, na instrução `call vezes2` . A chamada necessita usar o registrador `%rdi`, mas ele contém o primeiro argumento de `ex2`. 
+long ex_condicional(long rdi, long rsi);
+
+Vamos começar trabalhando na linha `ex2+7`, na instrução `call vezes2` . A chamada necessita usar o registrador `%rdi`, mas ele contém o primeiro argumento de `ex2`.
 
 1. Em qual registrador é guardado o primeiro argumento de `ex2`? Isso é feito antes da chamada `call`. \vspace{5em}
+   é guardado em rbx
 
 1. Qual variável é passada como argumento para a função `vezes2` ? \vspace{5em}
+   a variavel rdi
 
 1. Escreva abaixo a invocação de `vezes2`. \vspace{5em}
+   vezes2(rdi);
 
-
-Você deve ter notado as instruções `push/pop %rbx` no começo/fim da função. Toda função pode usar os registradores de argumentos (vistos na parte 1) e o de valor de retorno como quiserem. Se precisarem mexer nos outros registradores a prática é salvá-los na pilha no começo da função e restaurá-los no fim. Assim não importa o que a função faça, para a função chamadora é como se não houvesse havido nenhuma modificação nos outros registradores.  \newpage
+Você deve ter notado as instruções `push/pop %rbx` no começo/fim da função. Toda função pode usar os registradores de argumentos (vistos na parte 1) e o de valor de retorno como quiserem. Se precisarem mexer nos outros registradores a prática é salvá-los na pilha no começo da função e restaurá-los no fim. Assim não importa o que a função faça, para a função chamadora é como se não houvesse havido nenhuma modificação nos outros registradores. \newpage
 
 Vamos agora olhar a condicional na linha `ex2+12`.
 
 1. Após a chamada `call`, qual o conteúdo de `%rax`? \vspace{5em}
+   vezes2(rdi)
 
 1. Juntando suas respostas nas questões de cima, qual é a comparação feita nas linhas `ex2+12, ex2+17` ? \vspace{5em}
+   rax <= rbx
 
-1. Com essas informações em mãos, faça uma tradução do código acima para *C* usando somente `if+goto`. \vspace{10em}
+1. Com essas informações em mãos, faça uma tradução do código acima para _C_ usando somente `if+goto`. \vspace{10em}
 
+long ex_condiconal(long rdi, long rsi){
+long rbx = rdi;
+rdi = rsi;
+long ret vezes2(rdi);
+if(ret <= rbx) goto if1;
+rbx +=rbx;
+if1:
+ret += rbx;
+return ret;
 
-Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
+}
+
+Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes.
 
 \newpage
 
-**Exercício**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**. 
+**Exercício**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**.
 
 ```asm
 Dump of assembler code for function ex3:
@@ -221,22 +296,54 @@ Dump of assembler code for function ex3:
    0x0613 <+25>:	setg   %al
    0x0616 <+28>:	movzbl %al,%eax
    0x0619 <+31>:	mov    %eax,(%r8)
-   0x061c <+34>:	retq   
+   0x061c <+34>:	retq
 ```
 
 1. Quantos argumentos a função acima recebe? De quais tipos? Declare-a abaixo. \vspace{5em}
+   2 argumentos, são long
+
+int ex_3(long rdi, long rsi);
 
 1. A função acima faz várias comparações. Liste quais e entre quais argumentos. \vspace{7em}
 
+1) se rdi<rsi;
+2) se rdi - rsi == 0;
+3) se rdi > rsi;
+
 1. Onde é armazenado o resultado de cada comparação? \vspace{7em}
+   são armazenados em %al
 
 1. Com base em suas respostas acima, faça uma tradução linha a linha da função acima. \vspace{10em}
+   void solucao_ex3(long rdi, long rsi, int *rdx, int *rcx, int *r8){
+   int ret;
+   if(rdi < rsi){
+   ret = 1;
+   }
+   else{
+   ret = 0;
+   }
+   *rdx = ret;
+   if(rdi - rsi == 0){
+   ret = 1;
+   }
+   else{
+   ret = 0;
+   }
+   *rcx = ret;
+   if(rdi > rsi){
+   ret = 1;
+   }
+   else{
+   ret = 0;
+   }
+   *r8 = ret;
+   }
 
-Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
+Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes.
 
 \newpage
 
-**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Loops**. 
+**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Loops**.
 
 ```asm
 Dump of assembler code for function ex4:
@@ -249,18 +356,31 @@ Dump of assembler code for function ex4:
    0x060f <+17>:	cmp    %ebx,%eax
    0x0611 <+19>:	jb     0x608 <ex4+10>
    0x0613 <+21>:	pop    %rbx
-   0x0614 <+22>:	retq   
+   0x0614 <+22>:	retq
 ```
 
 1. Quantos argumentos a função acima recebe? Quais seus tipos? E o valor de retorno? Declare a função abaixo. \vspace{5em}
+   1 argumento (edi), seu tipo é int, o valor de retorno é int
 
 1. A função acima tem um loop. Entre quais instruções? Use setas para identificá-lo. \vspace{5em}
+   entre as linhas 8 e 19
 
 1. É feita uma chamada para `mais_um`. Qual o argumento passado? Onde seu resultado é usado? \vspace{5em}
+   mais_um(edi), na comparaco jb, pq o eax tem o resultado de mais_um
 
 1. Faça uma tradução linha a linha da função acima usando somente `if+goto` \vspace{10em}
+   long solucao_ex4(long rdi){
+   long rbx;
+   rbx = rdi;
+   int ret = 0;
+   while(ret < rbx){
+   rdi = ret;
+   mais_um(rdi);
+   }
+   return ret;
+   }
 
-Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
+Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes.
 
 <!--
 
@@ -269,7 +389,7 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 
 
 
-# Parte 
+# Parte
 
 
 
@@ -285,7 +405,7 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 
 A melhor maneira de identificar qual tipo de uso estamos fazendo é observar os operandos usados no `LEA` e o uso feito de seu resultado. Por isso é  muito importante identificar os parâmetros das funções. Se os operandos representarem parâmetros inteiros (`int` ou `long`) então certamente será um caso de aritmética. Se eles forem ponteiros então se trata do operador `&`.
 
-Em nossos exemplos, `LEA` aparece sempre com o registrador `%rsp` para calcularmos endereços de variáveis na pilha. Logo, a ocorrência de `LEA` com `%rsp` certamente é um caso em que usamos `&`. Além disto, se usamos `LEA` para preencher um registrador usado em um `call` então esse registrador provavelmente representa um argumento ponteiro. 
+Em nossos exemplos, `LEA` aparece sempre com o registrador `%rsp` para calcularmos endereços de variáveis na pilha. Logo, a ocorrência de `LEA` com `%rsp` certamente é um caso em que usamos `&`. Além disto, se usamos `LEA` para preencher um registrador usado em um `call` então esse registrador provavelmente representa um argumento ponteiro.
 
 Veja um outro exemplo abaixo:
 
@@ -306,9 +426,9 @@ Veja um outro exemplo abaixo:
 
 O compilador faz o possível para gerar executáveis pequenos. Isto é vantajoso tanto para o espaço em disco como para o desempenho quando executamos o programa, já que um programa com menos bytes é carregado mais rapidamente da memória.
 
-Um efeito colateral disto é que alguns códigos ficam menos legíveis para nós. Um ponto comum de confusão é a inicialização de registradores de `64`bits (como `%rax` e `%rdi`) usando instruções de `32` bits (como `%eax` e `%rdi`). Nestes casos, devemos identificar o tipo da variável pelas operações aritméticas seguintes. 
+Um efeito colateral disto é que alguns códigos ficam menos legíveis para nós. Um ponto comum de confusão é a inicialização de registradores de `64`bits (como `%rax` e `%rdi`) usando instruções de `32` bits (como `%eax` e `%rdi`). Nestes casos, devemos identificar o tipo da variável pelas operações aritméticas seguintes.
 
-Por exemplo, se um registrador é inicializado usando `mov $0, %edx` mas depois fazemos a operação `add $1, %rdx`, então ele representa uma variável do tipo `long`. Se a operação aritmética fosse `add $1, %edx` então seria um tipo `int`. 
+Por exemplo, se um registrador é inicializado usando `mov $0, %edx` mas depois fazemos a operação `add $1, %rdx`, então ele representa uma variável do tipo `long`. Se a operação aritmética fosse `add $1, %edx` então seria um tipo `int`.
 
 Leia o código abaixo e responda.
 
@@ -349,7 +469,7 @@ Vamos agora compreender um executável do começo ao fim tanto olhando seu Assem
 1. Estas funções chamam outras funções? Se sim, qual chama qual e em qual endereço? \vspace{5em}
 1. Pare a execução do programa logo antes da chamada de `funcao1` no `main`. Quais são os argumentos passados para ela? \vspace{5em}
 1. Olhe agora o disassembly de `funcao1`. Escreva abaixo uma versão em *C* desse código. \vspace{20em}
-1. Ainda não é possível saber o que faz `funcao2`, mas podemos simular isso. Coloque um *breakpoint* antes e um após a chamada de `funcao2`. Você consegue  identificar o quê mudou? Onde você procuraria isso? \vspace{10em} 
+1. Ainda não é possível saber o que faz `funcao2`, mas podemos simular isso. Coloque um *breakpoint* antes e um após a chamada de `funcao2`. Você consegue  identificar o quê mudou? Onde você procuraria isso? \vspace{10em}
 1. Sabendo o que `funcao2` faz via observação de suas entradas e saídas, faça sua tradução para *C*.  \vspace{10em}
 
 -->
