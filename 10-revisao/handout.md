@@ -2,11 +2,7 @@
 % Sistemas Hardware-Software - 2020/1
 % Igor Montagner
 
-<<<<<<< HEAD
-As aulas de hoje e quinta serão dedicadas a revisar conceitos básicos vistos nas últimas 5 aulas. A parte 1 repassa ponteiros e variáveis globais.  A parte 2 contém exercícios intermediários que misturam dois conceitos vistos em aula (ex: loops e `LEA` ou funções + condicionais). Está indicado ao lado de cada exercício quais conceitos são exercitados e todos eles serão recebidos via repositório de atividades da disciplina.
-=======
 As aulas de hoje e quinta serão dedicadas a revisar conceitos básicos vistos nas últimas 5 aulas. A parte 1 repassa ponteiros e variáveis globais. A parte 2 contém exercícios intermediários que misturam dois conceitos vistos em aula (ex: loops e `LEA` ou funções + condicionais). Está indicado ao lado de cada exercício quais conceitos são exercitados e todos eles serão recebidos via repositório de atividades da disciplina.
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
 
 **Atenção**: acesse a aba "Repositório de Atividades" no Teams para indicar seu usuário do blackboard e endereço do repositório privado no Github.
 
@@ -34,11 +30,7 @@ Nas linhas `+7` até `+12` podemos ver claramente a diferença entre a instruç�
 - linha `+7`: é colocado no **registrador** `%eax` o **valor** `%rsi + 2*%rsi`.
 - linha `+12`: é colocado na **memória**, no endereço gravado em `%rdx`, o valor do registrador **%edi** (4 bytes)
 
-<<<<<<< HEAD
-Ou seja, um `MOV` que se utiliza de parênteses represente o operador *variável apontada por* (**\***) em *C*. Um `LEA` nunca acessa a memória.
-=======
 Ou seja, um `MOV` que se utiliza de parênteses represente o operador _variável apontada por_ (**\***) em _C_. Um `LEA` nunca acessa a memória.
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
 
 **Exercício**: Levando as informações acima em conta, faça a tradução das linhas `+7` até `+14` de `muda_valor` \newpage
 int ret = 3*rsi;
@@ -69,9 +61,6 @@ Logo, a tradução da linha `+0` é simplesmente `var_global++`.
 **Exercício**: Traduza o programa completo abaixo. \vspace{10em}
 int var_global;
 
-<<<<<<< HEAD
-Lembre-se de que, ao rodar o programa, os endereços calculados podem mudar. Ou seja, na hora de analisar o programa rodando usando o *gdb* é sempre melhor usar o comando `b` para parar o programa onde você quiser e o comando `x` para mostrar dados na memória.
-=======
 void ex1(int edi, int rsi, int *rdx){
 var_global++;
 *rdx = edi + 3*b;
@@ -83,7 +72,6 @@ ex1(1, 2, &b);
 }
 
 Lembre-se de que, ao rodar o programa, os endereços calculados podem mudar. Ou seja, na hora de analisar o programa rodando usando o _gdb_ é sempre melhor usar o comando `b` para parar o programa onde você quiser e o comando `x` para mostrar dados na memória.
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
 
 # Parte 2 - exercícios intermediários
 
@@ -93,11 +81,7 @@ Os exercícios desta seção exercitam mais de um conceito ao mesmo tempo. Cada 
 
 \newpage
 
-<<<<<<< HEAD
-**Exercício**: A função abaixo exercita os assuntos **Variáveis globais** e **Loops**. Seu código completo está disponível no arquivo *ex1-sem-teste*.
-=======
 **Exercício**: A função abaixo exercita os assuntos **Variáveis globais** e **Loops**. Seu código completo está disponível no arquivo _ex1-sem-teste_.
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
 
 ```asm
 Dump of assembler code for function ex1:
@@ -121,10 +105,11 @@ int ebx = 0;
 int ret;
 while(var1 > 0){
 ret = 0;
-faz_algo(ret);
+faz_algo();
 ebx+=1;
 }
 ret = ebx;
+return ret;
 }
 
 1. Identifique todos os lugares em que uma variável global é usada. \vspace{5em}.
@@ -145,17 +130,6 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 Dump of assembler code for function ex2:
    0x05fa <+0>:	    mov    (%rdx),%rax
    0x05fd <+3>:	    cmp    %rax,(%rdi)
-<<<<<<< HEAD
-   0x0600 <+6>:	    jg     0x610 <ex2+22>
-   0x0602 <+8>:	    add    $0x1,%rax
-   0x0606 <+12>:	mov    %rax,(%rdx)
-   0x0609 <+15>:	add    (%rdx),%rsi
-   0x060c <+18>:	mov    %rsi,(%rdi)
-   0x060f <+21>:	retq
-   0x0610 <+22>:	lea    (%rsi,%rsi,2),%rsi
-   0x0614 <+26>:	jmp    0x609 <ex2+15>
-
-=======
    0x0600 <+6>:	    jg     0x60d <ex2+19>
    0x0602 <+8>:	    add    $0x8,%rdx
    0x0606 <+12>:	add    (%rdx),%rsi
@@ -163,7 +137,6 @@ Dump of assembler code for function ex2:
    0x060c <+18>:	retq
    0x060d <+19>:	lea    (%rsi,%rsi,2),%rsi
    0x0611 <+23>:	jmp    0x606 <ex2+12>
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
 ```
 
 1. Quais argumentos são recebidos pela função? Quais são seus tipos? Existe valor de retorno? Declare a função abaixo. \vspace{5em}
@@ -198,8 +171,3 @@ Dump of assembler code for function ex3:
 1. Faça uma tradução linha a linha do programa acima, levando em conta os tamanhos corretos dos dados. \vspace{10em}
 
 Com base nas respostas acima escreva seu programa completo no repositório de atividades.
-<<<<<<< HEAD
-
-
-=======
->>>>>>> eaf196ccd07af65fbdee3e4e57d1c214a9f4da4c
